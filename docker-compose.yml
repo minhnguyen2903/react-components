@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  react-site:
+    build: .
+    container_name: react-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"   # map to host 8080 for demo; in prod you'd use 80/443 or a reverse proxy
+    networks:
+      - webnet
+    # recommended: don't expose volumes in prod; for development you may mount build output
+    # volumes:
+    #   - ./build:/usr/share/nginx/html:ro
+
+  # OPTIONAL — simple ModSecurity WAF container; put it in front of react-site
+  # Note: this is an example; in production you'd craft rulesets and logging carefully
+  # Uncomment and configure if you want WAF in the compose network
+  # waf:
+  #   image: owasp/modsecurity-crs:alpine
+  #   ports:
+  #     - "80:80"
+  #   environment:
+  #     - UPSTREAM_HOST=react-site
+  #     - UPSTREAM_PORT=80
+  #   networks:
+  #     - webnet
+  #   depends_on:
+  #     - react-site
+
+networks:
+  webnet:
+    driver: bridge
